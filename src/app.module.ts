@@ -9,7 +9,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Settings } from './settings/Settings.entity';
 import { SettingsModule } from './settings/settings.module';
 import { ClientApiModule } from './client-api/client-api.module';
-import { FireflyModule } from './firefly/firefly.module';
 
 @Module({
   imports: [
@@ -27,7 +26,6 @@ import { FireflyModule } from './firefly/firefly.module';
     ServicesModule,
     SettingsModule,
     ClientApiModule,
-    FireflyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
