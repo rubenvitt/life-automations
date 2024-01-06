@@ -198,11 +198,33 @@ type SeasonEmoji =
   | '🎿'
   | '🌨️';
 
-function randomElement(...elements: SeasonEmoji[]): SeasonEmoji {
+type YearEmoji =
+  | '🌟'
+  | '🔮'
+  | '🎲'
+  | '🎨'
+  | '🌍'
+  | '💡'
+  | '🚀'
+  | '🎭'
+  | '🔑'
+  | '📚'
+  | '🎵'
+  | '🌈'
+  | '💎'
+  | '🛠️'
+  | '🖼️'
+  | '🔔'
+  | '⏳'
+  | '🌿'
+  | '🍀'
+  | '🔥';
+
+function randomElement<T>(...elements: T[]): T {
   return elements[Math.floor(Math.random() * elements.length)];
 }
 
-export function seasonEmoji(): SeasonEmoji {
+function seasonEmoji(): SeasonEmoji {
   const month = getMonth(new Date());
   if (month >= 2 && month <= 4) {
     return randomElement('🌸', '🌷', '🌱', '🌦️', '🐣');
@@ -216,9 +238,44 @@ export function seasonEmoji(): SeasonEmoji {
   return randomElement('❄️', '⛄', '🧣', '🎿', '🌨️');
 }
 
-export function seasonalIcon(): { emoji: SeasonEmoji; type: 'emoji' } {
+export function genericEmoji(): YearEmoji {
+  const emojis: YearEmoji[] = [
+    '🌟',
+    '🔮',
+    '🎲',
+    '🎨',
+    '🌍',
+    '💡',
+    '🚀',
+    '🎭',
+    '🔑',
+    '📚',
+    '🎵',
+    '🌈',
+    '💎',
+    '🛠️',
+    '🖼️',
+    '🔔',
+    '⏳',
+    '🌿',
+    '🍀',
+    '🔥',
+  ];
+
+  return randomElement(...emojis);
+}
+
+function icon<T>(emoji: T): { emoji: T; type: 'emoji' } {
   return {
-    emoji: seasonEmoji(),
+    emoji,
     type: 'emoji',
   };
+}
+
+export function genericIcon() {
+  return icon(genericEmoji());
+}
+
+export function seasonalIcon() {
+  return icon(seasonEmoji());
 }

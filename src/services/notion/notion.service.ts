@@ -10,6 +10,7 @@ import {
   createNotionPropertiesForWeeklyReview,
   createNotionPropertiesForYearlyReview,
   floor5Years,
+  genericIcon,
   isoDateOf,
   seasonalIcon,
 } from './notion.utils';
@@ -194,6 +195,7 @@ export class NotionService {
       parent: {
         database_id: this.yearlyReviewsDb,
       },
+      icon: genericIcon(),
       // @ts-ignore
       properties: createNotionPropertiesForYearlyReview(currentYearlyReviewId),
     });
@@ -216,6 +218,7 @@ export class NotionService {
       parent: {
         database_id: this.longtermReviewsDb,
       },
+      icon: genericIcon(),
       // @ts-ignore
       properties: createNotionPropertiesForLongtermReview(),
     });

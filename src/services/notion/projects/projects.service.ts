@@ -30,11 +30,11 @@ export class ProjectsService {
     });
   }
 
-  async addProjectsToWeeklyReview(weeklyReview: string) {
+  async addProjectsToReview(review: string) {
     const activeProjects = await this.findActiveProjects();
 
     await this.notion.pages.update({
-      page_id: weeklyReview,
+      page_id: review,
       properties: {
         Projekte: {
           relation: activeProjects.results.map((project) => ({

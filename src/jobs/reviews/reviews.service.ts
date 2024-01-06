@@ -14,7 +14,7 @@ export class ReviewsService {
   constructor(private notionService: NotionService) {}
 
   @Cron(CronExpression.EVERY_6_HOURS)
-  async handleCron() {
+  async reviewsCron() {
     this.logger.log('Reviews Cronjob wird ausgeführt! ⏰');
     if (await this.isDailyReviewPresent()) {
       // do nothing
@@ -36,7 +36,7 @@ export class ReviewsService {
   }
 
   @Cron('55 * * * *') // every day at *:55
-  async handleProjectReviewConnection() {
+  async projectReviewConnectionCron() {
     await this.addProjectsToCurrentReviews();
   }
 
@@ -165,10 +165,21 @@ export class ReviewsService {
 
   private async addProjectsToCurrentReviews() {
     await new Promise((resolve) => setTimeout(resolve, 100));
-    const weeklyReview = await this.notionService.findCurrentWeeklyReview();
+    const reviews = [
+      await this.notionService.findCurrentWeeklyReview(),
+      await this.notionService.findCurrentMonthlyReview(),
+      await this.notionService.findCurrentYearlyReview(),
+      await this.notionService.findCurrentLangfristigesReview(),
+    ];
 
-    await this.notionService
-      .projectService()
-      .addProjectsToWeeklyReview(weeklyReview.results[0].id);
+    await Promise.all(
+      reviews
+        .map((review) => review.results[0].id)
+        .map(async (reviewId) => {
+          await this.notionService
+            .projectService()
+            .addProjectsToReview(reviewId);
+        }),
+    );
   }
 }
