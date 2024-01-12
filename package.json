@@ -29,7 +29,7 @@
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/typeorm": "^10.0.1",
     "@notionhq/client": "^2.2.14",
-    "axios": "^1.6.3",
+    "axios": "^1.6.4",
     "date-fns": "^3.0.0",
     "openai": "^4.24.0",
     "reflect-metadata": "^0.1.13",
