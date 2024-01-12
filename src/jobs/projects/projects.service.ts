@@ -41,12 +41,9 @@ export class ProjectsService {
         'properties'
       ]['created_time'];
 
-    this.logger.log('last project:' + lastProjectDateString ?? 'unknown');
+    this.logger.log('last project: ' + lastProjectDateString ?? 'unknown');
     this.logger.log(
-      'last lebensbereich:' +
-        activeProjects.results[activeProjects.results.length - 1]?.[
-          'properties'
-        ]['Erstellt um']['created_time'] ?? 'unknown',
+      'last lebensbereich: ' + lastLebensbereichDateString ?? 'unknown',
     );
     if (lastLebensbereichDateString || lastProjectDateString) {
       const lastLebensbereichDate = toDate(lastLebensbereichDateString ?? 0);
