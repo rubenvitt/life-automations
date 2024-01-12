@@ -43,6 +43,19 @@ export class SettingsService {
     } else return result.value;
   }
 
+  public async findSilently(namespace: string, key: string) {
+    const [result] = await Promise.all([
+      this.repository.findOne({
+        where: {
+          id: asPrefix(namespace) + key,
+        },
+      }),
+    ]);
+
+    if (result === null) {
+    } else return result.value;
+  }
+
   update(namespace: string, setting: { key: string; value: string }) {
     return this.repository.upsert(
       {
