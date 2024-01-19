@@ -261,6 +261,7 @@ export class NotionService {
         value: 'database',
         property: 'object',
       },
+      page_size: 100,
     });
     result.push(...(searchResponse.results as DatabaseObjectResponse[]));
     while (searchResponse.has_more) {
