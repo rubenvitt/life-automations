@@ -30,7 +30,7 @@ export class ClientApiService {
     ).map((goal) => goal.replace('- ', ''));
   }
 
-  createMoment(moment: { name: string; momentTypeId: string }) {
+  createMoment(moment: { name: string; momentTypeId?: string }) {
     return this.notionService.createMoment(moment);
   }
 

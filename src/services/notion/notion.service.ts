@@ -311,17 +311,21 @@ export class NotionService {
       });
   }
 
-  createMoment(moment: { name: string; momentTypeId: string }) {
+  createMoment(moment: { name: string; momentTypeId?: string }) {
     return this.notion.pages.create({
       parent: {
         database_id: this.momentsDb,
       },
       properties: {
-        Typ: {
-          select: {
-            id: moment.momentTypeId,
-          },
-        },
+        ...(moment.momentTypeId
+          ? {
+              Typ: {
+                select: {
+                  id: moment.momentTypeId,
+                },
+              },
+            }
+          : {}),
         Name: {
           title: [
             {
