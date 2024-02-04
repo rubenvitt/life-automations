@@ -26,16 +26,23 @@ export class ClientApiController {
 
   @Post('/daily-goals')
   setDailyGoal(@Body() { goals }: { goals: string[] }) {
-    this.logger.log('Creating daily goals:', goals);
+    this.logger.log('Creating daily goals:', JSON.stringify(goals));
 
     return this.clientApiService.setDailyGoals(goals);
   }
 
-  @Get('daily-goals')
+  @Get('/daily-goals')
   findDailyGoals() {
     const goals = this.clientApiService.findDailyGoals();
-    this.logger.log('Found daily goals', goals);
+    this.logger.log('Found daily goals', JSON.stringify(goals));
     return goals;
+  }
+
+  @Get('/moments')
+  async getMoments() {
+    const moments = await this.clientApiService.findMoments();
+    this.logger.log('Found moments', JSON.stringify(moments));
+    return moments;
   }
 
   @Get('moment-types')

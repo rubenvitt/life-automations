@@ -2,7 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Client } from '@notionhq/client';
 import { DatabaseObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { SettingsService } from '../../settings/settings.service';
-import { format, startOfISOWeek, startOfMonth, startOfYear } from 'date-fns';
+import {
+  endOfDay,
+  format,
+  startOfDay,
+  startOfISOWeek,
+  startOfMonth,
+  startOfYear,
+  toDate,
+} from 'date-fns';
 import {
   createNotionPropertiesForDailyReview,
   createNotionPropertiesForLongtermReview,
@@ -29,6 +37,7 @@ export class NotionService {
   private longtermReviewsDb;
   private contractsDb;
   private momentsDb;
+  private goalsDb;
 
   constructor(
     notionAuthService: NotionAuthService,
@@ -68,6 +77,9 @@ export class NotionService {
     });
     settingsService.findOrWarn('notion', 'verträge').then((databaseId) => {
       this.contractsDb = databaseId;
+    });
+    settingsService.findOrWarn('notion', 'ziele').then((databaseId) => {
+      this.goalsDb = databaseId;
     });
   }
 
@@ -224,6 +236,27 @@ export class NotionService {
     });
   }
 
+  async findDailyGoalsForReview(dailyReview: DatabaseObjectResponse) {
+    this.logger.log('Finding daily goals for review', dailyReview.id);
+
+    console.log(dailyReview.properties['Tägliche Ziele']['relation']);
+
+    const dailyGoals = dailyReview.properties['Tägliche Ziele']['relation'] as {
+      id: string;
+    }[];
+
+    dailyGoals.map(async (goal) => {
+      this.logger.log('retrieving daily goal', goal.id);
+      return await this.notion.pages
+        .retrieve({
+          page_id: goal.id,
+        })
+        .then((g) => {
+          this.logger.log('retrieved daily goal', g['properties']);
+        });
+    });
+  }
+
   findContracts(onlyFresh: boolean) {
     return this.notion.databases.query({
       database_id: this.contractsDb,
@@ -296,12 +329,14 @@ export class NotionService {
     });
   }
 
-  async momentTypes(): Promise<{
-    id: string;
-    name: string;
-    color: string;
-    description?: string;
-  }> {
+  async momentTypes(): Promise<
+    {
+      id: string;
+      name: string;
+      color: string;
+      description?: string;
+    }[]
+  > {
     return this.notion.databases
       .retrieve({
         database_id: this.momentsDb,
@@ -384,5 +419,34 @@ export class NotionService {
 
   projectService() {
     return this._projectService;
+  }
+
+  findMoments() {
+    this.logger.log(
+      'Finding moments for today (' +
+        toDate(new Date()).toISOString() +
+        ') and before (' +
+        startOfDay(new Date()).toISOString() +
+        ')',
+    );
+    return this.notion.databases.query({
+      database_id: this.momentsDb,
+      filter: {
+        and: [
+          {
+            property: 'Zeitpunkt',
+            date: {
+              on_or_after: startOfDay(new Date()).toISOString(),
+            },
+          },
+          {
+            property: 'Zeitpunkt',
+            date: {
+              on_or_before: endOfDay(new Date()).toISOString(),
+            },
+          },
+        ],
+      },
+    });
   }
 }

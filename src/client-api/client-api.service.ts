@@ -23,15 +23,39 @@ export class ClientApiService {
   async findDailyGoals() {
     const dailyReview = await this.expectCurrentDailyReview();
 
-    return (
-      dailyReview.properties['Tagesziel / Fokus']['rich_text'][0][
+    //await this.notionService.findDailyGoalsForReview(dailyReview);
+
+    return [];
+
+    /*return (
+      dailyReview.properties['Tägliche Ziele']['rich_text'][0][
         'plain_text'
       ].split('\n') as string[]
-    ).map((goal) => goal.replace('- ', ''));
+    ).map((goal) => goal.replace('- ', ''));*/
   }
 
   createMoment(moment: { name: string; momentTypeId?: string }) {
     return this.notionService.createMoment(moment);
+  }
+
+  async findMoments() {
+    const momentTypes = await this.findMomentTypes();
+
+    const moments = await this.notionService.findMoments().then((value) => {
+      return value;
+    });
+
+    return moments.results.map((moment) => {
+      return {
+        id: moment.id,
+        name: moment['properties']['Name'].title[0].plain_text,
+        momentType: moment['properties']['Typ'].select
+          ? momentTypes.find(
+              (type) => type.id === moment['properties']['Typ'].select.id,
+            )?.name
+          : undefined,
+      };
+    });
   }
 
   private async expectCurrentDailyReview() {
