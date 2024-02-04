@@ -9,7 +9,6 @@ import {
   startOfISOWeek,
   startOfMonth,
   startOfYear,
-  toDate,
 } from 'date-fns';
 import {
   createNotionPropertiesForDailyReview,
@@ -424,9 +423,9 @@ export class NotionService {
   findMoments() {
     this.logger.log(
       'Finding moments for today (' +
-        toDate(new Date()).toISOString() +
-        ') and before (' +
         startOfDay(new Date()).toISOString() +
+        ') and before (' +
+        endOfDay(new Date()).toISOString() +
         ')',
     );
     return this.notion.databases.query({

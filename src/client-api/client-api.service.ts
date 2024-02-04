@@ -9,9 +9,7 @@ export class ClientApiService {
   constructor(private readonly notionService: NotionService) {}
 
   async findMomentTypes() {
-    const momentTypes = await this.notionService.momentTypes();
-    this.logger.log('found moment types', momentTypes);
-    return momentTypes;
+    return await this.notionService.momentTypes();
   }
 
   async setDailyGoals(goals: string[]) {

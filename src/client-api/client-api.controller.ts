@@ -40,9 +40,7 @@ export class ClientApiController {
 
   @Get('/moments')
   async getMoments() {
-    const moments = await this.clientApiService.findMoments();
-    this.logger.log('Found moments', JSON.stringify(moments));
-    return moments;
+    return await this.clientApiService.findMoments();
   }
 
   @Get('moment-types')
