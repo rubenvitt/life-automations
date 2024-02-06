@@ -47,6 +47,7 @@ export class ClientApiService {
       return {
         id: moment.id,
         name: moment['properties']['Name'].title[0].plain_text,
+        time: moment['properties']['Zeitpunkt'].date.start,
         momentType: moment['properties']['Typ'].select
           ? momentTypes.find(
               (type) => type.id === moment['properties']['Typ'].select.id,

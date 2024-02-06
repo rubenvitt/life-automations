@@ -5,6 +5,7 @@ import { SettingsService } from '../../settings/settings.service';
 import {
   endOfDay,
   format,
+  formatISO,
   startOfDay,
   startOfISOWeek,
   startOfMonth,
@@ -360,6 +361,11 @@ export class NotionService {
               },
             }
           : {}),
+        Zeitpunkt: {
+          date: {
+            start: formatISO(new Date()),
+          },
+        },
         Name: {
           title: [
             {
