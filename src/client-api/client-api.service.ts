@@ -32,8 +32,28 @@ export class ClientApiService {
     ).map((goal) => goal.replace('- ', ''));*/
   }
 
-  createMoment(moment: { name: string; momentTypeId?: string }) {
-    return this.notionService.createMoment(moment);
+  async createMoment(moment: {
+    name: string;
+    momentTypeId?: string;
+    momentType?: string;
+  }) {
+    if (moment.momentTypeId || !moment.momentType) {
+      return this.notionService.createMoment(moment);
+    }
+
+    const momentTypes = await this.findMomentTypes();
+    const momentTypeId = momentTypes.find(
+      (type) => type.name === moment.momentType,
+    );
+
+    if (!momentTypeId) {
+      throw new Error(`Moment type ${moment.momentType} not found`);
+    }
+
+    return this.notionService.createMoment({
+      name: moment.name,
+      momentTypeId: momentTypeId.id,
+    });
   }
 
   async findMoments() {

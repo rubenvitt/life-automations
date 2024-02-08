@@ -15,7 +15,14 @@ export class ClientApiController {
   constructor(private readonly clientApiService: ClientApiService) {}
 
   @Post('/moment')
-  createMoment(@Body() moment: { name: string; momentTypeId?: string }) {
+  createMoment(
+    @Body()
+    moment: {
+      name: string;
+      momentTypeId?: string;
+      momentType?: string;
+    },
+  ) {
     this.logger.log('Creating moment', moment);
     if (typeof moment.name !== 'string') {
       throw new BadRequestException('moment.name is not a string');
