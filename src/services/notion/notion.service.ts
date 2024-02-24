@@ -98,7 +98,7 @@ export class NotionService {
   async generateSpecialText() {
     return this.perplexityAiService.sendPrompt(
       `Was ist am ${format(new Date(), 'dd.MM.')} besonders? (antworte kurz)`,
-      'pplx-70b-online',
+      'sonar-medium-online',
       {
         // will be ignored by pplx-online :(
         content:
