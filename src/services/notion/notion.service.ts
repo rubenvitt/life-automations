@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
 import { Client } from '@notionhq/client';
 import { DatabaseObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { SettingsService } from '../../settings/settings.service';
@@ -239,21 +239,49 @@ export class NotionService {
   async findDailyGoalsForReview(dailyReview: DatabaseObjectResponse) {
     this.logger.log('Finding daily goals for review', dailyReview.id);
 
+    throw new NotImplementedException('Not working yet');
+
     console.log(dailyReview.properties['Tägliche Ziele']['relation']);
 
     const dailyGoals = dailyReview.properties['Tägliche Ziele']['relation'] as {
       id: string;
     }[];
 
-    dailyGoals.map(async (goal) => {
+    const created = await this.notion.pages
+      .create({
+        parent: {
+          database_id: this.goalsDb,
+        },
+        properties: {
+          Ziel: {
+            type: 'title',
+            title: [
+              {
+                text: {
+                  content: 'Test' + new Date().toISOString(),
+                },
+              },
+            ],
+          },
+        },
+      })
+      .then((value) => {
+        return value.id;
+      });
+
+    console.log('created', created);
+
+    return dailyGoals.map(async (goal) => {
       this.logger.log('retrieving daily goal', goal.id);
-      return await this.notion.pages
+      const promise = await this.notion.pages
         .retrieve({
-          page_id: goal.id,
+          page_id: created,
         })
         .then((g) => {
           this.logger.log('retrieved daily goal', g['properties']);
+          return g;
         });
+      return promise;
     });
   }
 

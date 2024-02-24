@@ -1,8 +1,8 @@
 export type Model =
-  | 'pplx-7b-online'
-  | 'pplx-70b-online'
-  | 'pplx-7b-chat'
-  | 'pplx-70b-chat';
+  | 'sonar-small-chat'
+  | 'sonar-small-online'
+  | 'sonar-medium-chat'
+  | 'sonar-medium-online';
 
 export type Role = 'assistant' | 'user' | 'system';
 

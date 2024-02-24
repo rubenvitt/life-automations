@@ -21,9 +21,9 @@ export class ClientApiService {
   async findDailyGoals() {
     const dailyReview = await this.expectCurrentDailyReview();
 
-    //await this.notionService.findDailyGoalsForReview(dailyReview);
+    const goals = await this.notionService.findDailyGoalsForReview(dailyReview);
 
-    return [];
+    return goals;
 
     /*return (
       dailyReview.properties['Tägliche Ziele']['rich_text'][0][
