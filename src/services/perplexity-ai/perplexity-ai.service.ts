@@ -1,42 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { Model, Payload, Prompt } from './perplexity';
-import { firstValueFrom, map } from 'rxjs';
+import {Injectable} from '@nestjs/common';
+import {HttpService} from '@nestjs/axios';
+import {ConfigService} from '@nestjs/config';
+import {Model, Payload, Prompt} from './perplexity';
+import {firstValueFrom, map} from 'rxjs';
 
 @Injectable()
 export class PerplexityAiService {
-  private readonly accessToken: string;
-  private apiBaseUrl = 'https://api.perplexity.ai/chat/completions';
+    private readonly accessToken: string;
+    private apiBaseUrl = 'https://api.perplexity.ai/chat/completions';
 
-  constructor(
-    private httpService: HttpService,
-    configService: ConfigService,
-  ) {
-    this.accessToken = configService.getOrThrow('PERPLEXITY_API_KEY');
-  }
+    constructor(
+        private httpService: HttpService,
+        configService: ConfigService,
+    ) {
+        this.accessToken = configService.getOrThrow('PERPLEXITY_API_KEY');
+    }
 
-  public async sendPrompt(
-    prompt: string,
-    model: Model = 'sonar-medium-online',
-    systemPrompt?: Prompt,
-  ) {
-    const headers = {
-      Authorization: `Bearer ${this.accessToken}`,
-    };
+    public async sendPrompt(
+        prompt: string,
+        model: Model = 'llama-3-sonar-large-32k-online',
+        systemPrompt?: Prompt,
+    ) {
+        const headers = {
+            Authorization: `Bearer ${this.accessToken}`,
+        };
 
-    const payload: Payload = {
-      model: model,
-      messages: [systemPrompt, { content: prompt, role: 'user' }].filter(
-        (value) => value,
-      ) as Prompt[],
-    };
+        const payload: Payload = {
+            model: model,
+            messages: [systemPrompt, {content: prompt, role: 'user'}].filter(
+                (value) => value,
+            ) as Prompt[],
+        };
 
-    return firstValueFrom(
-      this.httpService
-        .post(this.apiBaseUrl, payload, { headers })
-        .pipe(map((response) => response.data))
-        .pipe(map((data) => data['choices'][0]['message']['content'])),
-    );
-  }
+        return firstValueFrom(
+            this.httpService
+                .post(this.apiBaseUrl, payload, {headers})
+                .pipe(map((response) => response.data))
+                .pipe(map((data) => data['choices'][0]['message']['content'])),
+        );
+    }
 }
