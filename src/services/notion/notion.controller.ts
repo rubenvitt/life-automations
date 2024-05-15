@@ -9,11 +9,6 @@ export class NotionController {
     private notionService: NotionService,
   ) {}
 
-  @Get('/settings')
-  findAllSettings() {
-    return this.settingsService.findAll('notion');
-  }
-
   @Post('/settings')
   updateSettings(@Body() body: { key: string; value: string }) {
     return this.settingsService.update('notion', body);

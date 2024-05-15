@@ -4,6 +4,7 @@ import { NotionService } from '../../services/notion/notion.service';
 import { SettingsService } from '../../settings/settings.service';
 import { TodoistService } from '../../services/todoist/todoist.service';
 import { formatISO, max, toDate } from 'date-fns';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProjectsService {
@@ -13,6 +14,7 @@ export class ProjectsService {
     private readonly notionService: NotionService,
     private readonly settingsService: SettingsService,
     private readonly todoistService: TodoistService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -20,10 +22,9 @@ export class ProjectsService {
     this.logger.log(
       '[Cron]: Syncing Notion Projects and Lebensbereiche to Todoist',
     );
-    const lastSyncDate = await this.settingsService.findSilently(
-      'notion',
-      'last-new-project',
-    );
+    const lastSyncDate =
+      (await this.settingsService.findSilently('notion', 'last-new-project')) ??
+      this.configService.getOrThrow('NOTION_LAST_NEW_PROJECT_INITIAL');
 
     const activeProjects = await this.notionService
       .projectService()
@@ -70,7 +71,7 @@ export class ProjectsService {
         project['properties']['Projekt']['title'][0]['plain_text'],
         'project',
         todoistLebensbereich ??
-          (await this.settingsService.findOrWarn('todoist', 'default-project')),
+          this.configService.getOrThrow('TODOIST_DEFAULT_PROJECT'),
       );
       await this.notionService
         .projectService()

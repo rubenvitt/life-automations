@@ -3,6 +3,7 @@ import { Client } from '@notionhq/client';
 import { NotionAuthService } from '../notion-auth/notion-auth.service';
 import { SettingsService } from '../../../settings/settings.service';
 import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
+import { ConfigService } from '@nestjs/config';
 
 const statusActiveFilter = {
   or: [
@@ -31,17 +32,14 @@ export class ProjectsService {
   constructor(
     notionAuthService: NotionAuthService,
     settingsService: SettingsService,
+    configService: ConfigService,
   ) {
     this.notion = notionAuthService.notion();
 
-    settingsService.findOrWarn('notion', 'projects').then((databaseId) => {
-      this._projectsDb = databaseId;
-    });
-    settingsService
-      .findOrWarn('notion', 'lebensbereiche')
-      .then((databaseId) => {
-        this._lebensbereichDb = databaseId;
-      });
+    this._projectsDb = configService.get<string>('NOTION_PROJECTS_DB');
+    this._lebensbereichDb = configService.get<string>(
+      'NOTION_LEBENSBEREICHE_DB',
+    );
   }
 
   async findLebensbereich(lebensbereichId?: string) {

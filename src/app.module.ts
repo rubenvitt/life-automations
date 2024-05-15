@@ -17,7 +17,7 @@ import { ClientApiModule } from './client-api/client-api.module';
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: './data.db',
+      database: './data/data.db',
       entities: [Settings],
       synchronize: true,
     }),

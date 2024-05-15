@@ -13,6 +13,7 @@ const colorMap = {
 export class TodoistService {
   private readonly logger: Logger = new Logger(TodoistService.name);
   private readonly todoistApi: TodoistApi;
+
   constructor(configService: ConfigService) {
     const todoistApiKey = configService.getOrThrow<string>('TODOIST_API_KEY');
     this.todoistApi = new TodoistApi(todoistApiKey);

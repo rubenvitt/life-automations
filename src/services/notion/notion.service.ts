@@ -25,6 +25,7 @@ import {
 import { PerplexityAiService } from '../perplexity-ai/perplexity-ai.service';
 import { ProjectsService } from './projects/projects.service';
 import { NotionAuthService } from './notion-auth/notion-auth.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotionService {
@@ -42,45 +43,24 @@ export class NotionService {
   constructor(
     notionAuthService: NotionAuthService,
     settingsService: SettingsService,
+    configService: ConfigService,
     private readonly perplexityAiService: PerplexityAiService,
     private readonly _projectService: ProjectsService,
   ) {
     this.notion = notionAuthService.notion();
 
-    settingsService
-      .findOrWarn('notion', 'tägliche-reviews')
-      .then((databaseId) => {
-        this.dailyReviewsDb = databaseId;
-      });
-    settingsService
-      .findOrWarn('notion', 'wöchentliche-reviews')
-      .then((databaseId) => {
-        this.weeklyReviewsDb = databaseId;
-      });
-    settingsService
-      .findOrWarn('notion', 'monatliche-reviews')
-      .then((databaseId) => {
-        this.monthlyReviewsDb = databaseId;
-      });
-    settingsService
-      .findOrWarn('notion', 'jährliche-reviews')
-      .then((databaseId) => {
-        this.yearlyReviewsDb = databaseId;
-      });
-    settingsService
-      .findOrWarn('notion', 'langfristige-reviews')
-      .then((databaseId) => {
-        this.longtermReviewsDb = databaseId;
-      });
-    settingsService.findOrWarn('notion', 'momente').then((databaseId) => {
-      this.momentsDb = databaseId;
-    });
-    settingsService.findOrWarn('notion', 'verträge').then((databaseId) => {
-      this.contractsDb = databaseId;
-    });
-    settingsService.findOrWarn('notion', 'ziele').then((databaseId) => {
-      this.goalsDb = databaseId;
-    });
+    this.dailyReviewsDb = configService.getOrThrow('NOTION_DAILY_REVIEWS_DB');
+    this.weeklyReviewsDb = configService.getOrThrow('NOTION_WEEKLY_REVIEWS_DB');
+    this.monthlyReviewsDb = configService.getOrThrow(
+      'NOTION_MONTHLY_REVIEWS_DB',
+    );
+    this.yearlyReviewsDb = configService.getOrThrow('NOTION_YEARLY_REVIEWS_DB');
+    this.longtermReviewsDb = configService.getOrThrow(
+      'NOTION_LONGTERM_REVIEWS_DB',
+    );
+    this.momentsDb = configService.getOrThrow('NOTION_MOMENTS_DB');
+    this.contractsDb = configService.getOrThrow('NOTION_CONTRACTS_DB');
+    this.goalsDb = configService.getOrThrow('NOTION_GOALS_DB');
   }
 
   findCurrentDailyReview() {
@@ -98,7 +78,7 @@ export class NotionService {
   async generateSpecialText() {
     return this.perplexityAiService.sendPrompt(
       `Was ist am ${format(new Date(), 'dd.MM.')} besonders? (antworte kurz)`,
-      'sonar-medium-online',
+      'llama-3-sonar-large-32k-online',
       {
         // will be ignored by pplx-online :(
         content:
