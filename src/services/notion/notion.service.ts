@@ -87,7 +87,7 @@ export class NotionService {
           'Beantworte genau die Frage, die Dir vom user gestellt wird. Lokale Veranstaltungen spielen keine Rolle.\n' +
           'Es geht nur um allgemeine Fakten genau zu der Frage. Erwähne niemals die Suchergebnisse.\n' +
           'Antworte ausschließlich mit einer Liste, keine Einleitung oder Zusammenfassung.\n' +
-          'Du darfst Emojis benutzen, aber kein Markdown. Antworte als Liste. 1. (text)\n2.(text)',
+          'Du darfst Emojis benutzen, aber kein Markdown. Benutze unter keinen Umständen Markdown. Antworte als Liste:\n1. [text]\n2.[text]',
         role: 'system',
       },
     );
