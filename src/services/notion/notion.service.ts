@@ -78,7 +78,7 @@ export class NotionService {
   async generateSpecialText() {
     return this.perplexityAiService.sendPrompt(
       `Was ist am ${format(new Date(), 'dd.MM.')} besonders? (antworte kurz)`,
-      'llama-3-sonar-large-32k-online',
+      'llama-3.1-sonar-large-128k-online',
       {
         // will be ignored by pplx-online :(
         content:
@@ -106,7 +106,7 @@ export class NotionService {
       // @ts-ignore
       properties: createNotionPropertiesForDailyReview(
         currentWeeklyReviewId,
-        //await this.generateSpecialText().then((value) => value.trim()),
+        await this.generateSpecialText().then((value) => value.trim()),
       ),
     });
   }

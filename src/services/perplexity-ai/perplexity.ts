@@ -1,8 +1,6 @@
 export type Model =
-  | 'llama-3-sonar-small-32k-chat'
-  | 'llama-3-sonar-small-32k-online'
-  | 'llama-3-sonar-large-32k-chat'
-  | 'llama-3-sonar-large-32k-online';
+  | 'llama-3.1-sonar-large-128k-chat'
+  | 'llama-3.1-sonar-large-128k-online';
 
 export type Role = 'assistant' | 'user' | 'system';
 
