@@ -37,3 +37,4 @@ lerna-debug.log*
 /data.db
 ca.pem
 dev/services.notion.client.http
+/data/data.db

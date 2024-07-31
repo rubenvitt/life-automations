@@ -4,6 +4,8 @@ services:
   app:
     image: ghcr.io/rubenvitt/life-automations
     restart: always
+    volumes:
+      - data:/usr/src/app/data
     environment:
       NOTION_API_KEY: ${NOTION_API_KEY}
       TODOIST_API_KEY: ${TODOIST_API_KEY}
@@ -26,3 +28,6 @@ services:
       NOTION_LAST_NEW_PROJECT_INITIAL: ${NOTION_LAST_NEW_PROJECT_INITIAL}
     ports:
       - "9003:3003"
+
+volumes:
+  data:

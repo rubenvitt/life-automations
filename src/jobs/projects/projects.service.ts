@@ -15,7 +15,8 @@ export class ProjectsService {
     private readonly settingsService: SettingsService,
     private readonly todoistService: TodoistService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+  }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async syncNotionProjectsToTodoist() {
@@ -36,11 +37,11 @@ export class ProjectsService {
     const lastProjectDateString =
       activeProjects.results[activeProjects.results.length - 1]?.['properties'][
         'Erstellt um'
-      ]['created_time'];
+        ]['created_time'];
     const lastLebensbereichDateString =
       activeLebensbereiche.results[activeProjects.results.length - 1]?.[
         'properties'
-      ]['created_time'];
+        ]['created_time'];
 
     this.logger.log('last project: ' + lastProjectDateString ?? 'unknown');
     this.logger.log(
@@ -66,12 +67,12 @@ export class ProjectsService {
       const todoistLebensbereich =
         lebensbereich?.['properties']['Todoist Projekt']['rich_text'][0][
           'plain_text'
-        ];
+          ];
       const todoistProject = await this.todoistService.createProject(
         project['properties']['Projekt']['title'][0]['plain_text'],
         'project',
         todoistLebensbereich ??
-          this.configService.getOrThrow('TODOIST_DEFAULT_PROJECT'),
+        this.configService.getOrThrow('TODOIST_DEFAULT_PROJECT'),
       );
       await this.notionService
         .projectService()

@@ -106,7 +106,7 @@ export class NotionService {
       // @ts-ignore
       properties: createNotionPropertiesForDailyReview(
         currentWeeklyReviewId,
-        await this.generateSpecialText().then((value) => value.trim()),
+        //await this.generateSpecialText().then((value) => value.trim()),
       ),
     });
   }
@@ -284,11 +284,11 @@ export class NotionService {
           },
           onlyFresh
             ? {
-                property: 'Firefly id',
-                rich_text: {
-                  is_empty: true,
-                },
-              }
+              property: 'Firefly id',
+              rich_text: {
+                is_empty: true,
+              },
+            }
             : undefined,
         ],
       },
@@ -362,12 +362,12 @@ export class NotionService {
       properties: {
         ...(moment.momentTypeId
           ? {
-              Typ: {
-                select: {
-                  id: moment.momentTypeId,
-                },
+            Typ: {
+              select: {
+                id: moment.momentTypeId,
               },
-            }
+            },
+          }
           : {}),
         Zeitpunkt: {
           date: {
@@ -437,10 +437,10 @@ export class NotionService {
   findMoments() {
     this.logger.log(
       'Finding moments for today (' +
-        startOfDay(new Date()).toISOString() +
-        ') and before (' +
-        endOfDay(new Date()).toISOString() +
-        ')',
+      startOfDay(new Date()).toISOString() +
+      ') and before (' +
+      endOfDay(new Date()).toISOString() +
+      ')',
     );
     return this.notion.databases.query({
       database_id: this.momentsDb,
