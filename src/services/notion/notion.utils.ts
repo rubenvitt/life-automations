@@ -30,7 +30,7 @@ export function createNotionPropertiesForDailyReview(
       rich_text: [
         {
           text: {
-            content: specialText,
+            content: convertMarkdownToNotionRichText(specialText),
           },
           type: 'text',
         },
@@ -278,4 +278,35 @@ export function genericIcon() {
 
 export function seasonalIcon() {
   return icon(seasonEmoji());
+}
+
+function convertMarkdownToNotionRichText(markdownText: string) {
+  const boldPattern = /\*\*(.*?)\*\*/g;
+  const parts = markdownText.split(boldPattern);
+  const richTextItems = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 0) {
+      // Regular text
+      if (parts[i]) {
+        richTextItems.push({
+          text: {
+            content: parts[i],
+          },
+        });
+      }
+    } else {
+      // Bold text
+      richTextItems.push({
+        text: {
+          content: parts[i],
+        },
+        annotations: {
+          bold: true,
+        },
+      });
+    }
+  }
+
+  return richTextItems;
 }
