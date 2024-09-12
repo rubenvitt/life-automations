@@ -27,14 +27,7 @@ export function createNotionPropertiesForDailyReview(
       },
     },
     'Informationen zum Tag': {
-      rich_text: [
-        {
-          text: {
-            content: convertMarkdownToNotionRichText(specialText),
-          },
-          type: 'text',
-        },
-      ],
+      rich_text: convertMarkdownToNotionRichText(specialText),
     },
     Tag: {
       title: [
@@ -293,6 +286,7 @@ function convertMarkdownToNotionRichText(markdownText: string) {
           text: {
             content: parts[i],
           },
+          type: 'text',
         });
       }
     } else {
@@ -304,6 +298,7 @@ function convertMarkdownToNotionRichText(markdownText: string) {
         annotations: {
           bold: true,
         },
+        type: 'text',
       });
     }
   }
