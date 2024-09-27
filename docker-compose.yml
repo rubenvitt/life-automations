@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: ghcr.io/rubenvitt/life-automations
+    image: dev.rubeen.dev/webapps/life-automations
     restart: always
     volumes:
       - data:/usr/src/app/data
@@ -27,7 +27,7 @@ services:
       NOTION_LEBENSBEREICHE_DB: ${NOTION_LEBENSBEREICHE_DB}
       NOTION_LAST_NEW_PROJECT_INITIAL: ${NOTION_LAST_NEW_PROJECT_INITIAL}
     ports:
-      - "9003:3003"
+      - '9003:3003'
 
 volumes:
   data:
