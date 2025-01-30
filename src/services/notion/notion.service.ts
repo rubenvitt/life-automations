@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Client } from '@notionhq/client';
 import { DatabaseObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import { SettingsService } from '../../settings/settings.service';
 import {
   endOfDay,
   format,
@@ -11,6 +11,8 @@ import {
   startOfMonth,
   startOfYear,
 } from 'date-fns';
+import { PerplexityAiService } from '../perplexity-ai/perplexity-ai.service';
+import { NotionAuthService } from './notion-auth/notion-auth.service';
 import {
   createNotionPropertiesForDailyReview,
   createNotionPropertiesForLongtermReview,
@@ -22,10 +24,7 @@ import {
   isoDateOf,
   seasonalIcon,
 } from './notion.utils';
-import { PerplexityAiService } from '../perplexity-ai/perplexity-ai.service';
 import { ProjectsService } from './projects/projects.service';
-import { NotionAuthService } from './notion-auth/notion-auth.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotionService {
@@ -38,11 +37,9 @@ export class NotionService {
   private longtermReviewsDb;
   private contractsDb;
   private momentsDb;
-  private goalsDb;
 
   constructor(
     notionAuthService: NotionAuthService,
-    settingsService: SettingsService,
     configService: ConfigService,
     private readonly perplexityAiService: PerplexityAiService,
     private readonly _projectService: ProjectsService,
@@ -60,7 +57,6 @@ export class NotionService {
     );
     this.momentsDb = configService.getOrThrow('NOTION_MOMENTS_DB');
     this.contractsDb = configService.getOrThrow('NOTION_CONTRACTS_DB');
-    this.goalsDb = configService.getOrThrow('NOTION_GOALS_DB');
   }
 
   findCurrentDailyReview() {
@@ -78,7 +74,7 @@ export class NotionService {
   async generateSpecialText() {
     return this.perplexityAiService.sendPrompt(
       `Was ist am ${format(new Date(), 'dd.MM.')} besonders? (antworte kurz)`,
-      'llama-3.1-sonar-large-128k-online',
+      'sonar-reasoning',
       {
         // will be ignored by pplx-online :(
         content:
@@ -221,48 +217,6 @@ export class NotionService {
 
     throw new NotImplementedException('Not working yet');
 
-    console.log(dailyReview.properties['Tägliche Ziele']['relation']);
-
-    const dailyGoals = dailyReview.properties['Tägliche Ziele']['relation'] as {
-      id: string;
-    }[];
-
-    const created = await this.notion.pages
-      .create({
-        parent: {
-          database_id: this.goalsDb,
-        },
-        properties: {
-          Ziel: {
-            type: 'title',
-            title: [
-              {
-                text: {
-                  content: 'Test' + new Date().toISOString(),
-                },
-              },
-            ],
-          },
-        },
-      })
-      .then((value) => {
-        return value.id;
-      });
-
-    console.log('created', created);
-
-    return dailyGoals.map(async (goal) => {
-      this.logger.log('retrieving daily goal', goal.id);
-      const promise = await this.notion.pages
-        .retrieve({
-          page_id: created,
-        })
-        .then((g) => {
-          this.logger.log('retrieved daily goal', g['properties']);
-          return g;
-        });
-      return promise;
-    });
   }
 
   findContracts(onlyFresh: boolean) {

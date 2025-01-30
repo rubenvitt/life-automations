@@ -1,6 +1,6 @@
 export type Model =
-  | 'llama-3.1-sonar-large-128k-chat'
-  | 'llama-3.1-sonar-large-128k-online';
+  | 'sonar-reasoning'
+  | 'sonar-pro';
 
 export type Role = 'assistant' | 'user' | 'system';
 

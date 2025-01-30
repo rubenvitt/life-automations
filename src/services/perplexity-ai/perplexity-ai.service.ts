@@ -18,7 +18,7 @@ export class PerplexityAiService {
 
   public async sendPrompt(
     prompt: string,
-    model: Model = 'llama-3.1-sonar-large-128k-online',
+    model: Model = 'sonar-reasoning',
     systemPrompt?: Prompt,
   ) {
     const headers = {
