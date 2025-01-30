@@ -86,7 +86,7 @@ export class NotionService {
           'Du darfst Emojis benutzen, aber kein Markdown. Benutze unter keinen Umständen Markdown. Antworte als Liste:\n1. [text]\n2.[text]',
         role: 'system',
       },
-    );
+    ).then(response => response.replace(/<think>.*<\/think>/, ''));
   }
 
   async createDailyReview() {
