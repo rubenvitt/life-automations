@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:24-alpine
 LABEL org.opencontainers.image.source=https://github.com/rubenvitt/life-automations
 
 WORKDIR /usr/src/app
