@@ -64,14 +64,31 @@ export class ProjectsService {
         .findLebensbereich(
           project['properties']['Lebensbereich']['relation'][0]?.['id'],
         );
-      const todoistLebensbereich =
-        lebensbereich?.['properties']['Todoist Projekt']['rich_text'][0][
+
+      let todoistLebensbereichId =
+        lebensbereich?.['properties']['Todoist Projekt']['rich_text'][0]?.[
           'plain_text'
           ];
+
+      // If Lebensbereich exists in Notion but not in Todoist, create it first
+      if (lebensbereich && !todoistLebensbereichId) {
+        this.logger.log(
+          `Creating missing Lebensbereich in Todoist: ${lebensbereich['properties']['Thema']['title'][0]['plain_text']}`,
+        );
+        const todoistLebensbereich = await this.todoistService.createProject(
+          lebensbereich['properties']['Thema']['title'][0]['plain_text'],
+          'lebensbereich',
+        );
+        await this.notionService
+          .projectService()
+          .updateTodoistProject(lebensbereich.id, todoistLebensbereich.id);
+        todoistLebensbereichId = todoistLebensbereich.id;
+      }
+
       const todoistProject = await this.todoistService.createProject(
         project['properties']['Projekt']['title'][0]['plain_text'],
         'project',
-        todoistLebensbereich ??
+        todoistLebensbereichId ??
         this.configService.getOrThrow('TODOIST_DEFAULT_PROJECT'),
       );
       await this.notionService
