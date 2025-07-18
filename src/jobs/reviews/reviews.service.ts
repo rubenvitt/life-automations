@@ -11,8 +11,7 @@ import {
 export class ReviewsService {
   private readonly logger: Logger = new Logger(ReviewsService.name);
 
-  constructor(private notionService: NotionService) {
-  }
+  constructor(private notionService: NotionService) {}
 
   @Cron(CronExpression.EVERY_6_HOURS)
   async reviewsCron() {

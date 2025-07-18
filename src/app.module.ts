@@ -24,7 +24,8 @@ import { ClientApiModule } from './client-api/client-api.module';
       database: process.env.DB_NAME || 'lifeautomations',
       entities: [Settings],
       synchronize: true,
-      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+      ssl:
+        process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     }),
     ScheduleModule.forRoot(),
     JobsModule,

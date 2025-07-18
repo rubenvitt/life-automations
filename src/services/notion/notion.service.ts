@@ -72,21 +72,25 @@ export class NotionService {
   }
 
   async generateSpecialText() {
-    return this.perplexityAiService.sendPrompt(
-      `Was ist am ${format(new Date(), 'dd.MM.')} besonders? (antworte kurz)`,
-      'sonar-reasoning',
-      {
-        // will be ignored by pplx-online :(
-        content:
-          'Antworte so kurz wie möglich. Nicht mehr.\n' +
-          'Sei ganz präzise, entschuldige Dich nicht und rede dich nicht raus. Erwähne niemals die Suchergebnisse.\n' +
-          'Beantworte genau die Frage, die Dir vom user gestellt wird. Lokale Veranstaltungen spielen keine Rolle.\n' +
-          'Es geht nur um allgemeine Fakten genau zu der Frage. Erwähne niemals die Suchergebnisse.\n' +
-          'Antworte ausschließlich mit einer Liste, keine Einleitung oder Zusammenfassung.\n' +
-          'Du darfst Emojis benutzen, aber kein Markdown. Benutze unter keinen Umständen Markdown. Antworte als Liste:\n1. [text]\n2.[text]',
-        role: 'system',
-      },
-    ).then(response => response.replace(/<think>[\s\S]*?<\/think>\s*\n*/, '').trim());
+    return this.perplexityAiService
+      .sendPrompt(
+        `Was ist am ${format(new Date(), 'dd.MM.')} besonders? (antworte kurz)`,
+        'sonar-reasoning',
+        {
+          // will be ignored by pplx-online :(
+          content:
+            'Antworte so kurz wie möglich. Nicht mehr.\n' +
+            'Sei ganz präzise, entschuldige Dich nicht und rede dich nicht raus. Erwähne niemals die Suchergebnisse.\n' +
+            'Beantworte genau die Frage, die Dir vom user gestellt wird. Lokale Veranstaltungen spielen keine Rolle.\n' +
+            'Es geht nur um allgemeine Fakten genau zu der Frage. Erwähne niemals die Suchergebnisse.\n' +
+            'Antworte ausschließlich mit einer Liste, keine Einleitung oder Zusammenfassung.\n' +
+            'Du darfst Emojis benutzen, aber kein Markdown. Benutze unter keinen Umständen Markdown. Antworte als Liste:\n1. [text]\n2.[text]',
+          role: 'system',
+        },
+      )
+      .then((response) =>
+        response.replace(/<think>[\s\S]*?<\/think>\s*\n*/, '').trim(),
+      );
   }
 
   async createDailyReview() {
@@ -216,7 +220,6 @@ export class NotionService {
     this.logger.log('Finding daily goals for review', dailyReview.id);
 
     throw new NotImplementedException('Not working yet');
-
   }
 
   findContracts(onlyFresh: boolean) {
@@ -238,11 +241,11 @@ export class NotionService {
           },
           onlyFresh
             ? {
-              property: 'Firefly id',
-              rich_text: {
-                is_empty: true,
-              },
-            }
+                property: 'Firefly id',
+                rich_text: {
+                  is_empty: true,
+                },
+              }
             : undefined,
         ],
       },
@@ -316,12 +319,12 @@ export class NotionService {
       properties: {
         ...(moment.momentTypeId
           ? {
-            Typ: {
-              select: {
-                id: moment.momentTypeId,
+              Typ: {
+                select: {
+                  id: moment.momentTypeId,
+                },
               },
-            },
-          }
+            }
           : {}),
         Zeitpunkt: {
           date: {
@@ -391,10 +394,10 @@ export class NotionService {
   findMoments() {
     this.logger.log(
       'Finding moments for today (' +
-      startOfDay(new Date()).toISOString() +
-      ') and before (' +
-      endOfDay(new Date()).toISOString() +
-      ')',
+        startOfDay(new Date()).toISOString() +
+        ') and before (' +
+        endOfDay(new Date()).toISOString() +
+        ')',
     );
     return this.notion.databases.query({
       database_id: this.momentsDb,

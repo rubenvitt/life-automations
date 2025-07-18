@@ -15,14 +15,40 @@ export class ProjectsService {
     private readonly settingsService: SettingsService,
     private readonly todoistService: TodoistService,
     private readonly configService: ConfigService,
-  ) {
-  }
+  ) {}
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async syncNotionProjectsToTodoist() {
     this.logger.log(
       '[Cron]: Syncing Notion Projects and Lebensbereiche to Todoist',
     );
+
+    // First, sync ALL active Lebensbereiche to ensure they exist in Todoist
+    const allActiveLebensbereiche = await this.notionService
+      .projectService()
+      .findActiveLebensbereiche();
+
+    // Sync all Lebensbereiche that don't have a Todoist ID yet
+    for (const lebensbereich of allActiveLebensbereiche.results) {
+      const todoistProjectId =
+        lebensbereich['properties']['Todoist Projekt']['rich_text'][0]?.[
+          'plain_text'
+        ];
+
+      if (!todoistProjectId) {
+        this.logger.log(
+          `Creating Lebensbereich in Todoist: ${lebensbereich['properties']['Thema']['title'][0]['plain_text']}`,
+        );
+        const todoistProject = await this.todoistService.createProject(
+          lebensbereich['properties']['Thema']['title'][0]['plain_text'],
+          'lebensbereich',
+        );
+        await this.notionService
+          .projectService()
+          .updateTodoistProject(lebensbereich.id, todoistProject.id);
+      }
+    }
+
     const lastSyncDate =
       (await this.settingsService.findSilently('notion', 'last-new-project')) ??
       this.configService.getOrThrow('NOTION_LAST_NEW_PROJECT_INITIAL');
@@ -37,16 +63,14 @@ export class ProjectsService {
     const lastProjectDateString =
       activeProjects.results[activeProjects.results.length - 1]?.['properties'][
         'Erstellt um'
-        ]['created_time'];
+      ]['created_time'];
     const lastLebensbereichDateString =
       activeLebensbereiche.results[activeProjects.results.length - 1]?.[
         'properties'
-        ]['created_time'];
+      ]['created_time'];
 
     this.logger.log('last project: ' + lastProjectDateString);
-    this.logger.log(
-      'last lebensbereich: ' + lastLebensbereichDateString,
-    );
+    this.logger.log('last lebensbereich: ' + lastLebensbereichDateString);
     if (lastLebensbereichDateString || lastProjectDateString) {
       const lastLebensbereichDate = toDate(lastLebensbereichDateString ?? 0);
       const lastProjectDate = toDate(lastProjectDateString ?? 0);
@@ -68,7 +92,7 @@ export class ProjectsService {
       let todoistLebensbereichId =
         lebensbereich?.['properties']['Todoist Projekt']['rich_text'][0]?.[
           'plain_text'
-          ];
+        ];
 
       // If Lebensbereich exists in Notion but not in Todoist, create it first
       if (lebensbereich && !todoistLebensbereichId) {
@@ -89,22 +113,18 @@ export class ProjectsService {
         project['properties']['Projekt']['title'][0]['plain_text'],
         'project',
         todoistLebensbereichId ??
-        this.configService.getOrThrow('TODOIST_DEFAULT_PROJECT'),
+          this.configService.getOrThrow('TODOIST_DEFAULT_PROJECT'),
       );
       await this.notionService
         .projectService()
         .updateTodoistProject(project.id, todoistProject.id);
     });
 
-    activeLebensbereiche.results.map(async (lebensbereich) => {
-      const todoistProject = await this.todoistService.createProject(
-        lebensbereich['properties']['Thema']['title'][0]['plain_text'],
-        'lebensbereich',
-      );
-      await this.notionService
-        .projectService()
-        .updateTodoistProject(lebensbereich.id, todoistProject.id);
-    });
+    // We already synced all Lebensbereiche at the beginning, so we can skip this part
+    // Only log the newly created ones for tracking purposes
+    this.logger.log(
+      `Found ${activeLebensbereiche.results.length} new Lebensbereiche since last sync`,
+    );
 
     this.logger.log('Found projects in Notion:', activeProjects.results.length);
     this.logger.log(

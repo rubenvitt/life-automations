@@ -1,6 +1,4 @@
-export type Model =
-  | 'sonar-reasoning'
-  | 'sonar-pro';
+export type Model = 'sonar-reasoning' | 'sonar-pro';
 
 export type Role = 'assistant' | 'user' | 'system';
 
