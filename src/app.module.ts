@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Settings } from './settings/Settings.entity';
 import { SettingsModule } from './settings/settings.module';
 import { ClientApiModule } from './client-api/client-api.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ClientApiModule } from './client-api/client-api.module';
     ServicesModule,
     SettingsModule,
     ClientApiModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
